@@ -3,4 +3,7 @@
 *.log
 main
 gen
+runner
+decom
+test_random
 test
