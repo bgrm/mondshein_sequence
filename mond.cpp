@@ -456,7 +456,7 @@ namespace Mondshein
 		return ret;
 	}
 
-	bool validate(Graph& G, int r, int t, int u, MSeq& M)
+	bool validate(const Graph& G, int r, int t, int u, const MSeq& M)
 	{
 		#define FAIL(x) return printf("ERROR: %s\n", x), false
 
@@ -474,6 +474,8 @@ namespace Mondshein
 		    for (int i = notCycle; i < SZ(M[p]) - notCycle; i++)
 		    {
 		        int v = M[p][i];
+				if (v < 1 or v > n)
+					FAIL("invalid vertex");
 		        if (B[v] != -1)
 		            FAIL("multioccurence of a vertex");
 		        B[v] = p;
@@ -504,10 +506,10 @@ namespace Mondshein
 		    FAIL("wrong number of ears");
 
 		Edge rt {M[0].front(), M[0].back()};
-		if (rt != Edge(r,t) and rt != Edge(t,r))
+		if (!edgeEq(Edge(r, t), rt))
 		    FAIL("rt does not create the 0 ear");
 
-		vector <int>& pu = M[B[u]];
+		const vector <int>& pu = M[B[u]];
 		if (SZ(pu) != 3)
 		    FAIL("invalid u's ear's size");
 		if (pu[0] == r or pu[2] == r)
@@ -521,14 +523,32 @@ namespace Mondshein
 				S.push_back(ear[it[v] - 1]);
 			if (it[v] != SZ(ear)-1)
 				S.push_back(ear[it[v] + 1]);
-				
-			if (v != r and v != t and SZ(S) != 2)
-				FAIL("unkonwn");
 			
 			for (int x : S)
 				if (std::find(G[v].begin(), G[v].end(), x) == G[v].end())
 					FAIL("some long ear is not connected");
 		}
+
+		vector <Edge> E, shorts;
+		for (int v=1; v<=n; v++)
+			for (int u : G[v])
+				if (v < u)
+					E.push_back({v, u});
+		for (auto& p : M) if (SZ(p) == 2)
+		{
+			int a = p.front(), b = p.back();
+			shorts.push_back({std::min(a, b), std::max(a, b)});
+		}
+		sweep<Edge>(E, n, 1), sweep<Edge>(E, n, 0);
+		sweep<Edge>(shorts, n, 1), sweep<Edge>(shorts, n, 0);
+		E.push_back({n, n});
+		auto s = shorts.begin();
+
+		for (Edge& e : E)
+			if (s != shorts.end() and *s == e)
+				s++;
+		if (s != shorts.end())
+			FAIL("invalid short ear");
 		return true;
 	}
 } // Mondshein

@@ -3,36 +3,23 @@
 
 namespace
 {
-    struct EdgeExtended
+    struct EdgeIndexed
     {
-        int a, b, ind;
+        int first, second, ind;
 
-        EdgeExtended(const Edge& e = std::make_pair(0,0), int i = 0)
-        : a(e.first), b(e.second), ind(i)
+        EdgeIndexed(const Edge& e = std::make_pair(0,0), int i = 0)
+        : first(e.first), second(e.second), ind(i)
         {
-            if (a > b)
-                std::swap(a, b);
+            if (first > second)
+                std::swap(first, second);
         }
 
         Edge toEdge()
-        {   return Edge {a, b}; }
+        {   return Edge {first, second}; }
 
         bool equal(const Edge& e)
         {   return edgeEq(e, toEdge()); }
     };
-
-    void sweep(vector <EdgeExtended>& E, int n, bool coor)
-    {
-        vector <vector <EdgeExtended> > bucket (n+1);
-        for (auto e : E)
-            bucket[coor ? e.b : e.a].push_back(e);
-        E.clear();
-        for (int v=0; v<=n; v++)
-        {
-            E.insert(E.end(), bucket[v].begin(), bucket[v].end());
-            bucket[v].clear();
-        }
-    }
 
     vector <Edge> E;
     bool* isShort;
@@ -40,10 +27,10 @@ namespace
 
 vector <BGopEx> getBGopsExteneded(const vector <BGop>& base, int n)
 {
-    vector <EdgeExtended> all;
+    vector <EdgeIndexed> all;
     for (auto& [f, g, h] : base)
     {
-        #define PUSH(i, j) all.push_back(EdgeExtended({i, j}, SZ(all)))
+        #define PUSH(i, j) all.push_back(EdgeIndexed({i, j}, SZ(all)))
         auto [v, w] = f;
         auto [a, b] = g;
         auto [c, d] = h;

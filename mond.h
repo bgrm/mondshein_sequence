@@ -14,7 +14,7 @@ namespace Mondshein
 {
     MSeq compute(Graph& G, int rr, int tt, int uu);
 
-    bool validate(Graph& G, int r, int t, int u, MSeq& M);
+    bool validate(const Graph& G, int r, int t, int u, const MSeq& M);
 };
 
 #endif // __MOND__

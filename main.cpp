@@ -30,6 +30,14 @@ int main()
 	scanf ("%d%d%d", &r, &t, &u);
 	MSeq M = Mondshein::compute(G, r, t, u);
 	assert(Mondshein::validate(G, r, t, u, M));
+
+	for (auto& p : M)
+	{
+		for (int v : p)
+			printf("%d ", v);
+		printf("\n");
+	}
+
 	printf("CORRECT\n");
 	return 0;
 }
