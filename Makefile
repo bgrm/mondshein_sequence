@@ -43,7 +43,7 @@ edge.o: edge.cpp
 	$(CPP) -c $^ -o $@
 
 
-sqrt.o: order/test/sqrt.cpp
+sqrt.o: order/sqrt/sqrt.cpp
 	$(CPP) -c $^ -o $@
 
 	

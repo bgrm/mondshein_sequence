@@ -17,7 +17,6 @@ void Chain::print()
     dbg(string{"======\n"});
 }
 
-
 Chain::Chain(Vertex* v, Vertex* u)
 : s(v), z(u), t(u), segment(NULL)
 {
@@ -122,5 +121,3 @@ vector <Vertex*> Chain::reals()
             ret.push_back(v);
     return ret;
 }
-
-// int main() {	return 0;	}

@@ -1,28 +1,27 @@
-#ifndef __EBGE__
-#define __EBGE__
+#ifndef __BGEDGE__
+#define __BGEDGE__
 
 #include <list>
 using std::list;
 
-struct Edge_priv
+struct EdgeBG
 {
     int v, u;
-    list <Edge_priv*> :: iterator pv, pu;
+    list <EdgeBG*> :: iterator pv, pu;
 
-    Edge_priv(int a, int b)
-    : v(a), u(b) {}
+    EdgeBG(int a, int b);
 
     int& other(int x);
 
-    list <Edge_priv*> ::iterator& getIt(int x);
+    list <EdgeBG*> ::iterator& getIt(int x);
 
-    void erase();
-
-    void smooth(Edge_priv* e, int x);
+    void smooth(EdgeBG* e, int x);
 
     void print();
+
+    ~EdgeBG();
 };
 
 void makeBGedge(int a, int b);
 
-#endif // __EBGE__
+#endif // __BGEDGE__

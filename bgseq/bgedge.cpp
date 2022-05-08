@@ -1,44 +1,47 @@
 #include "bgedge.h"
 #include "debug.h"
 
-extern vector <list <Edge_priv*> > H;
+extern vector <list <EdgeBG*> > H;
 
-
-int& Edge_priv::other(int x)
-{   return x == v ? u : v;  }
-
-list <Edge_priv*> ::iterator& Edge_priv::getIt(int x)
-{   return x == v ? pv : pu;    }
-
-void Edge_priv::erase()
+EdgeBG::EdgeBG(int a, int b)
+: v(a), u(b)
 {
-    H[v].erase(pv);
-    H[u].erase(pu);
-    delete this;
+    H[v].push_back(this);
+    H[u].push_back(this);
+    pv = prev(H[v].end());
+    pu = prev(H[u].end());
 }
 
+int& EdgeBG::other(int x)
+{   return x == v ? u : v;  }
+
+list <EdgeBG*> ::iterator& EdgeBG::getIt(int x)
+{   return x == v ? pv : pu;    }
+
 // x has deg 2: this & e
-void Edge_priv::smooth(Edge_priv* e, int x)
+void EdgeBG::smooth(EdgeBG* e, int x)
 {
     int a = other(x), b = e->other(x);
-    getIt(x) = e->getIt(b);
-    *getIt(x) = this;
-    other(a) = b;
-
+    auto newIt = H[b].insert(e->getIt(b), this);
     delete e;
+    getIt(x) = newIt;
+    other(a) = b;
+    assert(H[x].size() == 1);
     H[x].clear();
 }
 
-void Edge_priv::print()
+void EdgeBG::print()
 {
     printf("<%d-%d>\n", u, v);
 }
 
+EdgeBG::~EdgeBG()
+{
+    H[v].erase(pv);
+    H[u].erase(pu);
+}
+
 void makeBGedge(int v, int u)
 {
-    Edge_priv* e = new Edge_priv(v, u);
-    H[v].push_back(e);
-    H[u].push_back(e);
-    e->pv = prev(H[v].end());
-    e->pu = prev(H[u].end());
+    new EdgeBG(v, u);
 }

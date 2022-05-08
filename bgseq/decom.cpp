@@ -10,7 +10,7 @@
 
 vector <Vertex*> V, Vordered;
 vector <Chain*> C;
-vector <list <Edge_priv*> > H;
+vector <list <EdgeBG*> > H;
 
 namespace
 {
@@ -215,8 +215,9 @@ namespace
 		for (auto [r, t] : paths)
 		{
 		    int a = r->id, b = t->id;
+		      
 		    assert(!H[a].empty() and !H[b].empty() and H[a].back() == H[b].back());
-		   	H[a].back()->erase();
+		   	delete H[a].back();
 		    
 		    Edge e = {a, b};
 		    Edge ea = {0, 0};
@@ -225,12 +226,13 @@ namespace
 		    // deleting vertices of deg 2 and updating their neigbor's H
 		    for (int v : {a, b}) if (SZ(H[v]) == 2)
 		    {
-		        Edge_priv *g = H[v].front(), *h = H[v].back();
+		        EdgeBG *g = H[v].front(), *h = H[v].back();
 		        g->smooth(h, v);
 		        (v == a ? ea : eb) = {g->v, g->u};
 		    }
 		    ret.push_back({e, ea, eb});
 		}
+
 		reverse(ret.begin(), ret.end());
 		return ret; //  ret[0] contains initial K4
 	}
@@ -259,17 +261,15 @@ namespace BGdecomposition
 		        delete c->cluster;
 		    delete c;
 		}
+		C.clear();
 		int root = Vordered[0]->id;
 		while (!H[root].empty())
-		    H[root].back()->erase();
+		    delete H[root].back();
 
 		for (Vertex* v : Vordered)
 		    delete v;
-		C.clear();
 		V.clear();
 		Vordered.clear();
-		for (auto& l : H)
-		    l.clear();
 		H.clear();
 	}
 } // BGdecomposition

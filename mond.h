@@ -4,7 +4,7 @@
 #include "bgseq/decom.h"
 #include "paths/paths.h"
 #include "order/order.h"
-#include "order/test/sqrt.h"
+#include "order/sqrt/sqrt.h"
 
 using Graph = vector <vector <int> >;
 using Edge = pair <int32_t, int32_t>;

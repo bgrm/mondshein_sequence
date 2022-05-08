@@ -67,6 +67,7 @@ Graph Interlock::makeEdges(vector <Interval*>& I, int range, int n)
     #define CONN(it, jt) G[(it) -> tag].push_back((jt) -> tag), \
                         G[(jt) -> tag].push_back((it) -> tag)
     renum(I, range);
+    sortPos(I, range, 0);
     rev(I);
     
     Interval border = Interval(range, range, 0);

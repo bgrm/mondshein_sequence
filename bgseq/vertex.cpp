@@ -10,7 +10,7 @@ Vertex::Vertex(int _id)
     chain = NULL;
 }
 
-extern vector <list <Edge_priv*> > H;
+extern vector <list <EdgeBG*> > H;
 extern vector <Vertex*> Vordered;
 
 int Vertex::deg()
