@@ -1,7 +1,7 @@
+#include <cassert>
 #include "vertex.h"
 #include "chain.h"
 #include "cluster.h"
-#include "debug.h"
 
 Cluster::Cluster(Chain* chain)
 {

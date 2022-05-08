@@ -5,8 +5,7 @@
 #include "cluster.h"
 #include "inter.h"
 #include <algorithm>
-
-#include "debug.h"
+#include <cassert>
 
 vector <Vertex*> V, Vordered;
 vector <Chain*> C;
@@ -110,7 +109,7 @@ namespace
 		}
 		if (zeroPresent)
 		    ret.push_back(0);
-		rev(ret);
+		reverse(ret.begin(), ret.end());
 
 		/* handling chains[0].t: */
 		int x = M[chains[0]->t->id];
@@ -272,53 +271,3 @@ namespace BGdecomposition
 		H.clear();
 	}
 } // BGdecomposition
-
-#if 0
-
-void print(const vector <BGop>& bg)
-{
-    #define PRINT(e) printf("[%d-%d], ", e.first, e.second)
-
-    for (auto [e, g, h] : bg)
-    {
-        PRINT(e), PRINT(g), PRINT(h);
-        printf("\n");
-    }
-
-    printf("===================\n");
-}
-
-
-int main()
-{
-    int n, m;
-    scanf ("%d%d", &n, &m);
-
-    Graph G(n+1);
-
-    while (m--)
-    {
-        int a, b;
-        scanf("%d%d", &a, &b);
-        G[a].push_back(b);
-        G[b].push_back(a);
-    }
-
-    auto bg = BGdecomposition::compute(G, 1);
-
-	auto [_, f, g] = bg[0];
-	if (f.second > f.first)
-		std::swap(f.first, f.second);
-	if (g.second > g.first)
-		std::swap(g.first, g.second);
-	assert(f  == g);
-
-    if (BGdecomposition::validate(G, 1, bg, false))
-        dbg("OK");
-
-    bg = BGdecomposition::simplify(bg, n);
-    if (BGdecomposition::validate(G, 1, bg, true))
-        dbg("OK");
-}
-
-#endif

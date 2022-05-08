@@ -21,12 +21,12 @@ const int maxN = 1 << 20;
 bool vis[maxN];
 vector <int> G[maxN];
 
-void dfs(int v, int a, int b)
+void dfs(int v)
 {
     vis[v] = true;
     for (int u : G[v])
-        if (u != a and u != b and !vis[u])
-            dfs(u, a, b);
+        if (!vis[u])
+            dfs(u);
 }
 
 void gen(int s, int seed) // s - # bgops
@@ -95,18 +95,20 @@ void gen(int s, int seed) // s - # bgops
     for (auto [a, b] : E)
         printf("%d %d\n", a, b), G[a].push_back(b), G[b].push_back(a);
     
-    return;
+    //return;
+
+    // check for 3-connectivity of the generated graph
 
     for (int a=1; a<=n; a++) for (int b=1; b<=n; b++)
     {
         fill(vis, vis+n+1, false);
+        vis[a] = vis[b] = true;
         int r = 1;
-        while (r == a or r == b)
+        while (vis[r])
             r++;
-        dfs(r, a, b);
+        dfs(r);
         for (int v=1; v<=n; v++)
-            if (v != a and v != b)
-                assert(vis[v]);
+            assert(vis[v]);
     }
 }
 
@@ -114,14 +116,14 @@ int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
-        printf("usage: %s #bgops and optionally seed\n", argv[0]);
+        printf("usage: %s #bgops, optionally seed, optionally any character for printing rtu\n", argv[0]);
         return 1;
     }
     int s = atoi(argv[1]);
     int seed = argc > 2 ? atoi(argv[2]) : 42;
     gen(s, seed);
 
-    if (argv[2]) // print r t u
+    if (argv[3]) // print r t u
     {
         printf("%d %d %d\n", 1, G[1][0], G[1][1]);
     }

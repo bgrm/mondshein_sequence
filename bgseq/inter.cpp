@@ -1,18 +1,11 @@
+#include <stack>
+#include <cstdio>
+#include <algorithm>
 #include "inter.h"
-#include "decom.h"
-#include "debug.h"
 
 template <typename TT>
 void rev(vector <TT>& T)
-{   reverse(T.begin(), T.end());    }
-
-void revInstances()
-{
-    vector <int> a;
-    rev(a);
-    vector <pair <Vertex*, Vertex* > > b;
-    rev(b);
-}
+{   std::reverse(T.begin(), T.end());    }
 
 vector <vector <Interval*> > T;
 
@@ -71,7 +64,7 @@ Graph Interlock::makeEdges(vector <Interval*>& I, int range, int n)
     rev(I);
     
     Interval border = Interval(range, range, 0);
-    stack <Interval*> S;
+    std::stack <Interval*> S;
     S.push(&border);
 
     for (Interval* i : I) // making edges in the F tree

@@ -1,7 +1,8 @@
+#include <vector>
+#include <cstdio>
+#include <cassert>
 #include "bgedge.h"
-#include "debug.h"
-
-extern vector <list <EdgeBG*> > H;
+extern std::vector <list <EdgeBG*> > H;
 
 EdgeBG::EdgeBG(int a, int b)
 : v(a), u(b)

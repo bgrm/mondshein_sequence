@@ -1,6 +1,6 @@
+#include <cstdio>
 #include "vertex.h"
 #include "bgedge.h"
-#include "debug.h"
 
 Vertex::Vertex(int _id)
 {

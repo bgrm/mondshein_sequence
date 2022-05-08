@@ -1,8 +1,8 @@
+#include <cassert>
 #include "vertex.h"
 #include "bgedge.h"
-#include "chain.h"
 #include "cluster.h"
-#include "debug.h"
+#include "chain.h"
 
 int Chain::id()
 {   return (long long) this % 10'000;   }
@@ -11,10 +11,10 @@ void Chain::print()
 {
     printf("hhain %d:\n", id());
     printf("s->%d, z->%d, t->%d \t %s\n", s->id, z->id, t->id, covered() ? "VIS" : "");
-    dbg(type);
+    printf("%s\n", type.c_str());
     if (segment)
-        dbg(segment->id());
-    dbg(string{"======\n"});
+        printf("%d\n", segment->id());
+    printf("======\n");
 }
 
 Chain::Chain(Vertex* v, Vertex* u)

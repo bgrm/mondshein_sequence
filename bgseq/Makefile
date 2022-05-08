@@ -1,7 +1,10 @@
 CPP = g++ -std=c++17
 
-decom: debug.o inter.o vertex.o bgedge.o chain.o cluster.o bonus.o decom.cpp
+main: inter.o vertex.o bgedge.o chain.o cluster.o bonus.o decom.o main.cpp
 	$(CPP) $^ -o $@
+
+decom.o: decom.cpp
+	$(CPP) -c $^ -o $@
 
 inter.o: inter.cpp
 	$(CPP) -c $^ -o $@
@@ -19,9 +22,6 @@ cluster.o: cluster.cpp
 	$(CPP) -c $^ -o $@
 
 bonus.o: bonus.cpp
-	$(CPP) -c $^ -o $@
-
-debug.o: debug.cpp
 	$(CPP) -c $^ -o $@
 
 	
