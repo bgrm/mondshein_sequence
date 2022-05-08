@@ -189,7 +189,6 @@ namespace
 		        if (chains[0] != ch) // we ommit artificial 0 segment
 		            addIntervals(chains, I, idToPathid, ++tag);
 
-
 		    /* we construct the graph on the set of the bad segments,
 		    dfs-order of witch will determine the order of 'adding'
 		    the clusters from these segments */

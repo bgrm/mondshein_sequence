@@ -3,7 +3,7 @@
 
 void print(Graph& G)
 {
-	for (int v=1; v<SZ(G); v++)
+	for (int v=1; v<(int)G.size(); v++)
 	{
 		printf("G[%d]:  ", v);
 		for (int x : G[v])
@@ -11,7 +11,6 @@ void print(Graph& G)
 		printf(";\n");
 	}
 	printf("===================\n\n");
-
 }
 
 int main()

@@ -1,4 +1,4 @@
-#include "edge.h"
+#include "shorts.h"
 #include <cassert>
 
 namespace
@@ -76,9 +76,9 @@ vector <BGopEx> getBGopsExteneded(const vector <BGop>& base, int n)
 Edge getEdge(int i)
 {   return E[i];    }
 
-int getInd(const Edge& e, BGopEx* op)
+int getInd(const Edge& e, const BGopEx& op)
 {
-    for (int i : *op)
+    for (int i : op)
         if (edgeEq(e, E[i]))
             return i;
     assert(false);
@@ -87,19 +87,19 @@ int getInd(const Edge& e, BGopEx* op)
 void insertShort(int i)
 {	isShort[i] = true;	}
 
-void insertShort(const Edge& e, BGopEx* op)
+void insertShort(const Edge& e, const BGopEx& op)
 {	insertShort(getInd(e, op));	}
 
 void removeShort(int i)
 {	isShort[i] = false;	}
 
-void removeShort(const Edge& e, BGopEx* op)
+void removeShort(const Edge& e, const BGopEx& op)
 {	removeShort(getInd(e, op));	}
 
 bool shortEar(int i)
 {	return isShort[i];	}
 
-bool shortEar(const Edge& e, BGopEx* op)
+bool shortEar(const Edge& e, const BGopEx& op)
 {	return shortEar(getInd(e, op));	}
 
 vector <Edge> getAllShorts()

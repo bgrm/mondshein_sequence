@@ -1,11 +1,14 @@
 #include "mond.h"
-#include "bgseq/vertex.h"
-#include "bgseq/chain.h"
-#include "edge.h"
+#include "bgseq/decom.h"
+#include "paths/paths.h"
+#include "order/order.h"
+#include "order/sqrt/sqrt.h"
+#include "shorts.h"
 
 #include <cassert>
 #include <set>
 using std::swap, std::tie;
+namespace PTH = PathsStructure;
 
 namespace
 {
@@ -19,7 +22,7 @@ namespace
 	inline int zeroEarId()
 	{	return order->successor(0);	}
 
-	pair <int, int> E(int v, bool right = false)
+	pair <int, int> E(int v)
 	{
 		bool which = edgeEq(getEdge(I[v][0]), {r, t});
 		return getEdge(I[v][which]);
@@ -77,7 +80,7 @@ namespace
 	int youngerId(int x, int y)
 	{	return birthLow(x, y) ? pathId(y) : pathId(x);	}
 
-	void initI(int v, int a, int b, BGopEx* op)
+	void initI(int v, int a, int b, const BGopEx& op)
 	{	I[v] = {getInd({a, v}, op), getInd({v, b}, op)};	}
 
 	void updateI(int v, int newInd, int only = 0)
@@ -87,14 +90,14 @@ namespace
 				i = newInd;
 	}
 
-	void enlong(const Edge& e, int end, int v, BGopEx* op = nullptr)
+	void enlong(const Edge& e, int end, int v, const BGopEx& op = empty_bgop)
 	{
 		PTH::addVertex(e.second == end ? e : flip(e), v);
-		if (op != nullptr)
+		if (!EMPTY_BGOP(op))
 			initI(end, e.first ^ e.second ^ end, v, op);
 	}
 
-	int createPath(const vector <int>& vs, BGopEx* op)
+	int createPath(const vector <int>& vs, const BGopEx& op)
 	{
 		assert(SZ(vs) > 1);
 		int ret = PTH::newPath({vs[0], vs[1]});
@@ -111,11 +114,10 @@ namespace
 			order->insertBefore(old, fresh);
 	}
 
-	void subdivide(Edge e, int v, BGopEx* op)
+	void subdivide(Edge e, int v, const BGopEx& op)
 	{
 		assert(!edgeEq(e, {r, u}));
 		auto [a, b] = e;
-
 		int i = getInd(e, op);
 		int ia = getInd({a, v}, op);
 		int ib = getInd({b, v}, op);
@@ -158,7 +160,7 @@ namespace
 	}
 
 	// d != 0 -> vertex that e wants to ommit in its' new long ear
-	void leg(Edge e, BGopEx* op, int d = 0)
+	void leg(Edge e, const BGopEx& op, int d = 0)
 	{
 		auto [x, y] = e;
 		int i = getInd(e, op);
@@ -185,7 +187,7 @@ namespace
 		}
 	}
 
-	void belly(Edge e, BGopEx* op)
+	void belly(Edge e, const BGopEx& op)
 	{
 		auto [x, y] = e;
 		int i = getInd(e, op);
@@ -198,7 +200,7 @@ namespace
 		updateI(y, i);
 	}
 
-	void intoLong(Edge e, BGopEx* op)
+	void intoLong(Edge e, const BGopEx& op)
 	{	birthEq(e.first, e.second) ? belly(e, op) : leg(e, op);	}
 
 	// rearranging variables according to the assumptions from the paper
@@ -244,10 +246,8 @@ namespace
 		auto [e, f, g] = p;
 		std::set <int> S {e.first, e.second, f.first, f.second, g.first, g.second};
 		assert(SZ(S) == 4);
-		S.erase(r);
-		S.erase(t);
-		S.erase(u);
-		assert(S.size() == 1);
+		for (int x : {r, t, u})
+			S.erase(x);
 		return *S.begin();			
 	}
 
@@ -273,7 +273,7 @@ namespace
 		updateKeyVertex(u, bgopsBase, nextU);
 		int x = getFourth(bgopsBase[0]);
 		
-		BGopEx* op = &bgops.front();
+		BGopEx& op = bgops.front();
 		int p0 = createPath({t, x, r}, op);
 		int p1 = createPath({t, u, x}, op);
 		initI(r, t, x, op);
@@ -285,7 +285,7 @@ namespace
 
 	// when we dont't want to split ru
 	// we use in advance the BGop that will reconnect r with u
-	void extraRU(int v, int w, int c, int d, BGopEx* op)
+	void extraRU(int v, int w, int c, int d, const BGopEx& op)
 	{
 		if (d != u)
 		{
@@ -312,7 +312,7 @@ namespace
 		}
 	}
 
-	void caseRU(int v, int w, int a, int b, int c, int d, BGopEx* op)
+	void caseRU(int v, int w, int a, int b, int c, int d, const BGopEx& op)
 	{
 		assert(edgeEq({a, b}, {r, u}));
 
@@ -336,16 +336,15 @@ namespace
 		insertShort({r, u}, op);
 	}
 
-	void caseVV(int v, int w, BGopEx* op)
+	void caseVV(int v, int w, const BGopEx& op)
 	{
 		if (!edgeEq({v, w}, {r, t}) and !edgeEq({v, w}, {r, u}))	// this BGop has already been used
 			insertShort({v, w}, op);
 	}
 
-	void caseVE(int v, int w, int a, int b, BGopEx* op)
+	void caseVE(int v, int w, int a, int b, const BGopEx& op)
 	{
 		subdivide({a, b}, v, op);
-		
 		Edge e {w, v};
 		if (birthLow(v, w))
 		    insertShort(e, op);
@@ -353,7 +352,7 @@ namespace
 			intoLong(e, op);
 	}
 
-	void caseEE(int v, int w, int a, int b, int c, int d, BGopEx* op)
+	void caseEE(int v, int w, int a, int b, int c, int d, const BGopEx& op)
 	{
 		assert(!shortEar({a, b}, op) and !birthLow(b, d));
 
@@ -425,7 +424,7 @@ namespace Mondshein
 				swap(v, w);
 
 		    standarize(v, w, a, b, c, d);
-			BGopEx* op = &bgops[i];
+			BGopEx& op = bgops[i];
 
 			// after the first intoLong() we may lose the property 'b younger than d'
 			for (int _=0; _<2; _++)

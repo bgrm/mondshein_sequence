@@ -1,6 +1,6 @@
 CPP = g++ --std=c++17
 
-main: paths.o lib.o order.o vertex.o bgedge.o chain.o bonus.o cluster.o inter.o decom.o debug.o mond.o edge.o sqrt.o main.cpp
+main: paths.o lib.o order.o vertex.o bgedge.o chain.o bonus.o cluster.o inter.o decom.o debug.o mond.o shorts.o sqrt.o main.cpp
 	$(CPP) $^ -o $@
 	
 mond.o: mond.cpp
@@ -39,7 +39,7 @@ decom.o: bgseq/decom.cpp
 debug.o: bgseq/debug.cpp
 	$(CPP) -c $^ -o $@
 
-edge.o: edge.cpp
+shorts.o: shorts.cpp
 	$(CPP) -c $^ -o $@
 
 
