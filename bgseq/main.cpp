@@ -40,10 +40,18 @@ int main()
 
     if (BGdecomposition::validate(G, 1, bg, false))
         printf("base validation - ok\n");
+    else
+    {
+        print(bg);
+        return 1;
+    }
 
     bg = BGdecomposition::simplify(bg, n);
     if (BGdecomposition::validate(G, 1, bg, true))
         printf("simplicity check - ok\n");
-
-    print(bg);
+    else
+    {
+        print(bg);
+        return 1;
+    }
 }

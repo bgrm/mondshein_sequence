@@ -229,6 +229,8 @@ namespace
 		        (v == a ? ea : eb) = {g->v, g->u};
 		    }
 		    ret.push_back({e, ea, eb});
+
+//			printf("[%d-%d]. [%d-%d],[%d-%d]\n", a, b, ea.first, ea.second, eb.first, eb.second);
 		}
 
 		reverse(ret.begin(), ret.end());

@@ -122,6 +122,8 @@ namespace
 		int ia = getInd({a, v}, op);
 		int ib = getInd({b, v}, op);
 
+		assert(!shortEar(i));
+
 		if (edgeEq(e, {r, t}))
 		{
 			int ir = a == r ? ia : ib;
@@ -159,23 +161,23 @@ namespace
 		}
 	}
 
-	// d != 0 -> vertex that e wants to ommit in its' new long ear
-	void leg(Edge e, const BGopEx& op, int d = 0)
+	void leg(Edge e, const BGopEx& op)
 	{
 		auto [x, y] = e;
 		int i = getInd(e, op);
 		int former = pathId(y);
 		int latter = PTH::split(E(y), y);
 
-		Edge g = getEdge(I[y][0]), h = getEdge(I[y][1]);
-		Edge f = PTH::isSingleEdge(g) or PTH::isBorderVertex(h, x) ? g : h;	// edge that will be enlonged by e
-		if (d != 0)
-			f = birthEq(d, h) ? g : h;
-		Edge other = edgeEq(f, g) ? h : g;
-		int otherInd = I[y][edgeEq(other, h)];
+		Edge toEnlong = getEdge(I[y][0]), other = getEdge(I[y][1]);
+		int otherInd = I[y][1];
+		if (PTH::isSingleEdge(other) or PTH::isBorderVertex(toEnlong, x))
+		{
+			swap(toEnlong, other);
+			otherInd = I[y][0];
+		}
 
 		removeShort(i);
-		enlong(f, y, x);
+		enlong(toEnlong, y, x);
 		updateI(y, i);
 		insertIntoOrder(former, latter, former == pathId(e));
 
@@ -201,19 +203,20 @@ namespace
 	}
 
 	void intoLong(Edge e, const BGopEx& op)
-	{	birthEq(e.first, e.second) ? belly(e, op) : leg(e, op);	}
+	{	
+		if (birthLow(e.second, e.first))
+			e = flip(e);
+		birthEq(e.first, e.second) ? belly(e, op) : leg(e, op);
+	}
 
-	// rearranging variables according to the assumptions from the paper
-	void standarize(int& v, int& w, int& a, int& b, int& c, int& d)
+	void standarize(int& v, int& w, int& a, int& b, int& c, int& d, const BGopEx& op)
 	{
-		if (a != 0 and birthLow(b, a))
-		    swap(a, b);
-		if (c != 0 and birthLow(d, c))
-		    swap(c, d);
-		if (c == 0)
-		    return;
-		if (b == 0 or birthLow(b, d) or edgeEq({c, d}, {r, u}) or edgeEq({a, b}, {r, t}))
-		    swap(v, w), swap(a, c), swap(b, d);
+		for (Edge& e : vector <Edge> {{c, d}, {a, b}})
+			if (shortEar(e, op) and !edgeEq(e, {r, u}))
+				intoLong(e, op);
+
+		if (a == 0 or edgeEq({c, d}, {r, u}))
+			swap(v, w), swap(a, c), swap(b, d);
 	}
 
 	void updateKeyVertex(int& x, vector <BGop>& bgopsBase, int* nxt)
@@ -283,57 +286,33 @@ namespace
 		insertIntoOrder(p0, p1);
 	}
 
-	// when we dont't want to split ru
-	// we use in advance the BGop that will reconnect r with u
-	void extraRU(int v, int w, int c, int d, const BGopEx& op)
+	void caseRU(int v, int w, int a, int b, int c, int d, const BGopEx& op)
 	{
-		if (d != u)
+		assert(edgeEq({a, b}, {r, u}));
+		assert(!shortEar({c, d}, op));
+		if (c != 0)
+		    subdivide({c, d}, w, op);
+
+		if (birthEq(w, u) and nextU[u] != v)
 		{
-			if (c != 0)
-				subdivide({c, d}, w, op);
-			int p = createPath({r, v, w}, op);
-			insertIntoOrder(pathId(w), p);
-			insertShort({v, u}, op);
-		}
-		else if (shortEar({c, d}, op))
-		{
-			removeShort({c, d}, op);
-			int p = createPath({r, v, w, c}, op);
-			insertIntoOrder(pathId(c), p);
-			insertShort({v, u}, op);
-			insertShort({w, u}, op);
-		}
-		else	//	{c, d} in u's birth-ear
-		{
-			subdivide({c, d}, w, op);
 			leg({v, w}, op);
 			enlong({w, v}, v, r, op);
 			insertShort({v, u}, op);
 		}
-	}
-
-	void caseRU(int v, int w, int a, int b, int c, int d, const BGopEx& op)
-	{
-		assert(edgeEq({a, b}, {r, u}));
-
-		if (v != nextU[u])
+		else if (nextU[u] != v)
 		{
-			extraRU(v, w, c, d, op);
-			return;
+			int p = createPath({r, v, w}, op);
+			insertIntoOrder(pathId(w), p);
+			insertShort({v, u}, op);
 		}
-
-		if (c != 0)
-		    subdivide({c, d}, w, op);
-
-		removeShort({r, u}, op);
-
-		int newPath = createPath({w, v, u}, op);
-		// when c-d is short ear with d=u, then w can be temporarily younger than u
-		int lastPath = youngerId(u, w);
-		insertIntoOrder(lastPath, newPath);
-		
-		u = v;
-		insertShort({r, u}, op);
+		else
+		{
+			removeShort({r, u}, op);
+			int p = createPath({w, v, u}, op);
+			insertIntoOrder(pathId(u), p);	
+			u = v;
+			insertShort({r, u}, op);
+		}
 	}
 
 	void caseVV(int v, int w, const BGopEx& op)
@@ -345,7 +324,7 @@ namespace
 	void caseVE(int v, int w, int a, int b, const BGopEx& op)
 	{
 		subdivide({a, b}, v, op);
-		Edge e {w, v};
+		Edge e {v, w};
 		if (birthLow(v, w))
 		    insertShort(e, op);
 		else
@@ -354,26 +333,21 @@ namespace
 
 	void caseEE(int v, int w, int a, int b, int c, int d, const BGopEx& op)
 	{
-		assert(!shortEar({a, b}, op) and !birthLow(b, d));
+		assert(!shortEar({a, b}, op));
 
 		if (!shortEar({c, d}, op)) 
 		{
 		    subdivide({a, b}, v, op);
 		    subdivide({c, d}, w, op);
-		    intoLong({w, v}, op);
-		}
-		else if (birthEq(b, c) or PTH::isBorderVertex({a, b}, c)) // {c,d} is a belly of {a,b}'s ear (or it's 'weak' leg)
-		{
-		    intoLong({c, d}, op);
-		    subdivide({a, b}, v, op);
-		    subdivide({c, d}, w, op);
-		    intoLong({w, v}, op);
+		    intoLong({v, w}, op);
 		}
 		else	// {c,d} is a 'strict' leg of {a,b}'s long ear 
 		{
+			if (birthLow(d, c))
+				swap(c, d);
 		    removeShort({c, d}, op);
 		    subdivide({a, b}, v, op);
-		    leg({w, v}, op, d);
+		    leg({w, v}, op);
 		    enlong({v, w}, w, c, op);
 		    insertShort({w, d}, op);
 		}
@@ -417,29 +391,8 @@ namespace Mondshein
 		    auto [a, b] = getEdge(bgops[i][1]);
 		    auto [c, d] = getEdge(bgops[i][2]);
 
-			auto [g, h] = getEdge(bgops[i][3]);
-			auto [x, y] = getEdge(bgops[i][5]);
-
-			if ((g != 0 and v != g and v != h) or (x != 0 and w != x and w != y))
-				swap(v, w);
-
-		    standarize(v, w, a, b, c, d);
 			BGopEx& op = bgops[i];
-
-			// after the first intoLong() we may lose the property 'b younger than d'
-			for (int _=0; _<2; _++)
-			{
-				Edge e {a, b};
-				if (a != 0 and shortEar(e, op) and !edgeEq(e, {r, u}))
-				{
-					intoLong(e, op);
-					standarize(v, w, a, b, c, d);
-				}
-			}
-
-			Edge f {c, d};
-			if (shortEar(f, op) and birthLow(d, b))
-				intoLong(f, op);
+		    standarize(v, w, a, b, c, d, op);
 
 		    if (edgeEq({a, b}, {r, u}))
 		        caseRU(v, w, a, b, c, d, op);
@@ -552,5 +505,3 @@ namespace Mondshein
 		return true;
 	}
 } // Mondshein
-
-// int main() {}

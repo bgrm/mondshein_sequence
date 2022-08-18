@@ -55,6 +55,15 @@ vector <BGopEx> getBGopsExteneded(const vector <BGop>& base, int n)
             E.push_back(e.toEdge());
         ret[i][j] = SZ(E) - 1;
     }
+    for (int i=0; i<SZ(base); i++)
+    {
+        if (ARG(base[i], 0) != getEdge(ret[i][0]))
+        {
+            std::swap(ret[i][1], ret[i][2]);
+            std::swap(ret[i][3], ret[i][5]);
+            std::swap(ret[i][4], ret[i][6]);
+        }
+    }
     all.clear();
     isShort = new bool [SZ(E)]();
     return ret;

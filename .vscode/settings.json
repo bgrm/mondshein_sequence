@@ -1,6 +1,7 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
     "files.associations": {
-        "cstdio": "cpp"
+        "cstdio": "cpp",
+        "array": "cpp"
     }
 }

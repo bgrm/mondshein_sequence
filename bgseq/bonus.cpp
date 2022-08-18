@@ -97,10 +97,10 @@ namespace BGdecomposition
 	void preprocess(Graph& G, int r, int t, int u)
 	{
 		vector <int>& adj = G[r];
-		int i = std::find(adj.begin(), adj.end(), t) - adj.begin();
-		std::swap(adj[1], adj[i]);
-		i = std::find(adj.begin(), adj.end(), u) - adj.begin();
-		std::swap(adj[2], adj[i]);
+		const auto t_it = std::find(adj.begin(), adj.end(), t);
+		std::swap(adj[1], *t_it);
+		const auto u_it = std::find(adj.begin(), adj.end(), u);
+		std::swap(adj[2], *u_it);
 	}
 
 	bool validate(const Graph& G, int root, const vector <BGop>& ops, bool simple)
@@ -196,4 +196,3 @@ namespace BGdecomposition
 	}
 } //BGdecomposition
 
-//int main() {}
