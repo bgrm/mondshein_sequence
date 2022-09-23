@@ -68,7 +68,7 @@ bool Chain::covered()
 bool Chain::inGoodSeg(Chain* root) // if 'this' is in good seg when processing 'root'
 {
     Chain* s = segment; assert(s);
-    return (s->type[0] != '1' and s->type[0] != '2') or s->father != root;
+    return s->type[0] == '3' or s->father != root;
 }
 
 Chain* Chain::setSegment()

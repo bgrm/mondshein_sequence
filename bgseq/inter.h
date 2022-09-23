@@ -15,18 +15,8 @@ struct Interval
     void print();
 };
 
-template <typename TT>
-void rev(vector <TT>& T);
-
 namespace Interlock
 {
-    /* applies positional sort to I according to the coor */
-    void sortPos(vector <Interval*>& I, int range, int coor);
-
-    /* renums intervals in I so that no endpoint is shared by 2 intervals 
-    and interlocking relation is preserved */
-    void renum(vector <Interval*>& I, int& range);
-
     Graph makeEdges(vector <Interval*>& I, int range, int n);
 }
 

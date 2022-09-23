@@ -3,40 +3,49 @@
 #include <algorithm>
 #include "inter.h"
 
-template <typename TT>
-void rev(vector <TT>& T)
-{   std::reverse(T.begin(), T.end());    }
-
+namespace
+{
 vector <vector <Interval*> > T;
 
-void Interval::print()
-{
-    printf("[%d-%d,  %d]\n", a, b, tag);
-}
-
 /* applies positional sort to I according to the coor */
-void Interlock::sortPos(vector <Interval*>& I, int range, int coor)
+void sortPos(vector <Interval*>& I, int range, int coor)
 {
     T.resize(range);
     for (Interval* i : I)
         T[coor == 0 ? i->a : i->b].push_back(i);
     I.clear();
-    for (int c=0; c<range; c++)
+    for (auto& vec : T)
     {
-        for (Interval* i : T[c])
-            I.push_back(i);
-        T[c].clear();
+        I.insert(I.end(), vec.begin(), vec.end());
+        vec.clear();
+    }
+}
+
+void sortAndReverse(vector <Interval*>& I, int range)
+{
+    sortPos(I, range, 1);
+    sortPos(I, range, 0);
+    reverse(I.begin(), I.end());
+}
+
+void reverseEqualSubsegments(vector <Interval*>& vec)
+{
+    decltype(vec.end()) jt;
+    for (auto it = vec.begin(); it != vec.end(); it = jt)
+    {
+        jt = std::find_if(it, vec.end(), [it] (Interval* i)
+                {   return i->b != (*it)->b;  });
+        std::reverse(it, jt);
     }
 }
 
 /* renums intervals in I so that no endpoint is shared by 2 intervals 
 and interlocking relation is preserved */
-void Interlock::renum(vector <Interval*>& I, int& range)
+void renum(vector <Interval*>& I, int& range)
 {
-    sortPos(I, range, 0);
-    sortPos(I, range, 1);
     vector <vector <Interval*> > starts(range), ends(range);
-
+    sortAndReverse(I, range);
+    
     for (Interval* i : I)
         starts[i->a].push_back(i), ends[i->b].push_back(i);
 
@@ -44,14 +53,21 @@ void Interlock::renum(vector <Interval*>& I, int& range)
 
     for (int x=0; x<range; x++)
     {
-        rev(starts[x]);
-        rev(ends[x]);
+        reverseEqualSubsegments(starts[x]);
+        // so that equal segments become nested instead of cutting
+
         for (Interval* i : ends[x])
             i->b += offset++;
         for (Interval* i : starts[x])
             i->a += offset++;
     }
     range += offset;
+}
+}
+
+void Interval::print()
+{
+    printf("[%d-%d,  %d]\n", a, b, tag);
 }
 
 Graph Interlock::makeEdges(vector <Interval*>& I, int range, int n)
@@ -60,9 +76,8 @@ Graph Interlock::makeEdges(vector <Interval*>& I, int range, int n)
     #define CONN(it, jt) G[(it) -> tag].push_back((jt) -> tag), \
                         G[(jt) -> tag].push_back((it) -> tag)
     renum(I, range);
-    sortPos(I, range, 0);
-    rev(I);
-    
+    sortAndReverse(I, range);
+
     Interval border = Interval(range, range, 0);
     std::stack <Interval*> S;
     S.push(&border);
