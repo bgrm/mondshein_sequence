@@ -1,12 +1,11 @@
 #include "decom.h"
 #include <cassert>
 
-void print(const vector <BGop>& bg)
+void print(const vector<BGop>& bg)
 {
-    #define PRINT(e) printf("[%d-%d], ", e.first, e.second)
+#define PRINT(e) printf("[%d-%d], ", e.first, e.second)
 
-    for (auto [e, g, h] : bg)
-    {
+    for (auto [e, g, h] : bg) {
         PRINT(e), PRINT(g), PRINT(h);
         printf("\n");
     }
@@ -17,12 +16,11 @@ void print(const vector <BGop>& bg)
 int main()
 {
     int n, m;
-    scanf ("%d%d", &n, &m);
+    scanf("%d%d", &n, &m);
 
-    Graph G(n+1);
+    Graph G(n + 1);
 
-    while (m--)
-    {
+    while (m--) {
         int a, b;
         scanf("%d%d", &a, &b);
         G[a].push_back(b);
@@ -31,17 +29,16 @@ int main()
 
     auto bg = BGdecomposition::compute(G, 1);
 
-	auto [_, f, g] = bg[0];
-	if (f.second > f.first)
-		std::swap(f.first, f.second);
-	if (g.second > g.first)
-		std::swap(g.first, g.second);
-	assert(f  == g);
+    auto [_, f, g] = bg[0];
+    if (f.second > f.first)
+        std::swap(f.first, f.second);
+    if (g.second > g.first)
+        std::swap(g.first, g.second);
+    assert(f == g);
 
     if (BGdecomposition::validate(G, 1, bg, false))
         printf("base validation - ok\n");
-    else
-    {
+    else {
         print(bg);
         return 1;
     }
@@ -49,8 +46,7 @@ int main()
     bg = BGdecomposition::simplify(bg, n);
     if (BGdecomposition::validate(G, 1, bg, true))
         printf("simplicity check - ok\n");
-    else
-    {
+    else {
         print(bg);
         return 1;
     }

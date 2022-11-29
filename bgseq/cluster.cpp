@@ -1,7 +1,7 @@
-#include <cassert>
-#include "vertex.h"
-#include "chain.h"
 #include "cluster.h"
+#include "chain.h"
+#include "vertex.h"
+#include <cassert>
 
 Cluster::Cluster(Chain* chain)
 {
@@ -10,40 +10,39 @@ Cluster::Cluster(Chain* chain)
 }
 
 Cluster* Cluster::father()
-{   return chains.back()->father->cluster;  }
+{
+    return chains.back()->father->cluster;
+}
 
-void Cluster::addCaterpillar(vector <BGpath>& paths)
+void Cluster::addCaterpillar(vector<BGpath>& paths)
 {
     Chain* first = chains[0];
     Chain* last = chains.back();
     Chain* parent = last->father;
     int start = -1;
-    
-    if (first->s->inorder < parent->t->inorder)
-    {
+
+    if (first->s->inorder < parent->t->inorder) {
         first->add();
-        paths.push_back({first->s, last->t});
+        paths.push_back({ first->s, last->t });
         start = 1;
     }
 
-    else
-    {
+    else {
         Vertex* ft = first->t;
 
         first->add(ft);
         chains[1]->add(ft);
-        paths.push_back({first->s, last->s});
+        paths.push_back({ first->s, last->s });
 
         Vertex::add(ft, ft->father, last->t);
-        paths.push_back({ft, last->t});
+        paths.push_back({ ft, last->t });
 
         start = 2;
     }
 
-    for (int i=start; i<chains.size(); i++)
-    {
+    for (int i = start; i < chains.size(); i++) {
         Chain* d = chains[i];
-        paths.push_back({d->s, d->add()});
+        paths.push_back({ d->s, d->add() });
     }
 }
 
@@ -51,7 +50,7 @@ void Cluster::addCaterpillar(vector <BGpath>& paths)
 'Adds' the cluster.
 Inserts proper bgpaths to 'paths'
 */
-void Cluster::add(vector <BGpath>& paths)
+void Cluster::add(vector<BGpath>& paths)
 {
     assert(!chains.empty());
 
@@ -59,13 +58,13 @@ void Cluster::add(vector <BGpath>& paths)
     Chain* ch = chains[0];
 
     if (chains.size() == 1) //  handling chains of type 0, 1, 2A, 3A
-        paths.push_back({ch->s, ch->add()});
+        paths.push_back({ ch->s, ch->add() });
 
     else // handling caterpillars
         addCaterpillar(paths);
 }
 
-void Cluster::addRec(vector <BGpath>& paths)
+void Cluster::addRec(vector<BGpath>& paths)
 {
     if (covered)
         return;

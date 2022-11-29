@@ -3,7 +3,7 @@
 using std::cout;
 
 template <typename TT>
-void dbg(list <TT>& L)
+void dbg(list<TT>& L)
 {
     cout << "[";
     for (TT x : L)
@@ -12,7 +12,7 @@ void dbg(list <TT>& L)
 }
 
 template <typename TT>
-void dbg(vector <TT>& L)
+void dbg(vector<TT>& L)
 {
     cout << "[";
     for (TT x : L)
@@ -23,17 +23,20 @@ void dbg(vector <TT>& L)
 void TagListMinor::print()
 {
     cout << "faTag = " << *fatherTag << "\n";
-    cout << "L:\t"; dbg(L);
-    cout << "\nind:\t"; dbg(index);
+    cout << "L:\t";
+    dbg(L);
+    cout << "\nind:\t";
+    dbg(index);
     cout << "\n=================\n";
 }
 
 void TagListMajor::print()
 {
     cout << "MAJOR:\n";
-    cout << "L:" ;dbg(L);
+    cout << "L:";
+    dbg(L);
     cout << "\n= = = = = = = = = = = = = \n\n";
-} 
+}
 
 void Order::print()
 {
@@ -42,10 +45,12 @@ void Order::print()
     for (auto& l : minors)
         l->print();
 
-    cout << "\nminorIt:\t"; dbg(minorIt);
-    cout << "\nminorTag:\t"; dbg(minorTag);
-    cout << "\nindexIt:\t"; dbg(indexIt);
+    cout << "\nminorIt:\t";
+    dbg(minorIt);
+    cout << "\nminorTag:\t";
+    dbg(minorTag);
+    cout << "\nindexIt:\t";
+    dbg(indexIt);
 
     cout << "\n#!# #!# #!# #!# #!# #!# #!# #!# #!# #!# #!# #!#\n\n\n";
 }
-

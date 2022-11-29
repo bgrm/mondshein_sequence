@@ -2,21 +2,21 @@
 #define __CHAIN__
 
 #include <string>
+#include <vector>
 
 struct Vertex;
 struct Cluster;
 
-extern vector <Vertex*> Vordered;
+extern std::vector<Vertex*> Vordered;
 
-struct Chain
-{
-    Vertex *s, *t, *z;          // z - second vertex in chain
+struct Chain {
+    Vertex *s, *t, *z; // z - second vertex in chain
     std::string type;
     Cluster* cluster;
     Chain* father;
-    vector <Chain*> ch12, tp3; // children12, type3
-    Chain* segment;            // segment representant
-    int segId;          // valid for a bad segment's root - info for type3-chains from it's segment
+    std::vector<Chain*> ch12, tp3; // children12, type3
+    Chain* segment; // segment representant
+    int segId; // valid for a bad segment's root - info for type3-chains from it's segment
 
     Chain(Vertex* v, Vertex* u);
     int id();
@@ -29,8 +29,8 @@ struct Chain
     Chain* setSegment();
     Chain* extractC0(Vertex* v);
     Vertex* add(Vertex* stop = Vordered[0]);
-    void mapVertices(vector <int>& M);
-    vector <Vertex*> reals();
+    void mapVertices(std::vector<int>& M);
+    std::vector<Vertex*> reals();
 
     void print();
 };

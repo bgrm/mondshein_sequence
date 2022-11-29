@@ -4,16 +4,15 @@
 #include <list>
 using std::list;
 
-struct EdgeBG
-{
+struct EdgeBG {
     int v, u;
-    list <EdgeBG*> :: iterator pv, pu;
+    list<EdgeBG*>::iterator pv, pu;
 
     EdgeBG(int a, int b);
 
     int& other(int x);
 
-    list <EdgeBG*> ::iterator& getIt(int x);
+    list<EdgeBG*>::iterator& getIt(int x);
 
     void smooth(EdgeBG* e, int x);
 

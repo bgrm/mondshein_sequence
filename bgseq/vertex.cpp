@@ -1,6 +1,6 @@
-#include <cstdio>
 #include "vertex.h"
 #include "bgedge.h"
+#include <cstdio>
 
 Vertex::Vertex(int _id)
 {
@@ -10,24 +10,26 @@ Vertex::Vertex(int _id)
     chain = NULL;
 }
 
-extern vector <list <EdgeBG*> > H;
-extern vector <Vertex*> Vordered;
+extern vector<list<EdgeBG*>> H;
+extern vector<Vertex*> Vordered;
 
 int Vertex::deg()
-{   return H[id].size();    }
+{
+    return H[id].size();
+}
 
 bool Vertex::real()
-{   return deg() >= 3;    }
+{
+    return deg() >= 3;
+}
 
 Vertex* Vertex::add(Vertex* u, Vertex* v, Vertex* stop)
 {
-    do
-    {
+    do {
         makeBGedge(u->id, v->id);
         u = v;
         v = v->father;
-    }
-    while (u != stop and u->deg() < 2);
+    } while (u != stop and u->deg() < 2);
     return u;
 }
 

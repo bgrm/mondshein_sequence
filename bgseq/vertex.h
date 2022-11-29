@@ -7,13 +7,12 @@ using std::vector;
 struct Chain;
 struct Edge_priv;
 
-struct Vertex
-{
-    int id;         // vertex's number in the input
-    int inorder;    // dfs entrance order
+struct Vertex {
+    int id; // vertex's number in the input
+    int inorder; // dfs entrance order
     Vertex* father; // null for the root
-    vector <Vertex*> adj;
-    Chain* chain;   // chain of the edge to the father
+    vector<Vertex*> adj;
+    Chain* chain; // chain of the edge to the father
 
     Vertex(int id);
     int deg();

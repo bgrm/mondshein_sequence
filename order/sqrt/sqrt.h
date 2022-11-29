@@ -1,16 +1,15 @@
 #ifndef __SQRT__
 #define __SQRT__
 
-#include <vector>
-#include <list>
 #include "../order.h"
+#include <list>
+#include <vector>
 using std::vector, std::list;
 
-struct OrderSqrt : public Order
-{
+struct OrderSqrt : public Order {
     int d;
-    vector <list <int> > L;
-    vector <int> P;
+    vector<list<int>> L;
+    vector<int> P;
 
     OrderSqrt(int n);
     void insert(int x, int y) override;
