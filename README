@@ -9,3 +9,4 @@ The 'test n' script runs main on many random graphs created with n bg-operations
 The 'bgseq' module contains the implementation of bg-sequence computation.
 The 'order' module contains the implementation of the total order maintenance algorithm.
 The 'paths' module contains the implementation of the data structure maintaining edge-disjoint paths.
+ 
