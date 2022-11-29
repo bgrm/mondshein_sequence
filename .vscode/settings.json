@@ -1,8 +1,0 @@
-{
-    "makefile.extensionOutputFolder": "./.vscode",
-    "files.associations": {
-        "cstdio": "cpp",
-        "array": "cpp",
-        "algorithm": "cpp"
-    }
-}
