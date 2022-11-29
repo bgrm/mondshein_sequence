@@ -160,11 +160,7 @@ namespace
 		vector <int> idToPathid(n+1); // mapping of vertices to id on path
 
 		for (Chain* ch : C)
-		{
-		    for (Chain* d : ch->ch12)
-		        if (!d->covered() and d->type == "2A" and d->t->real())
-		            d->cluster->add(ret);
-		        
+		{		        
 		    for (Chain* d : ch->ch12)
 		        if (!d->covered())
 		            d->setSegment();

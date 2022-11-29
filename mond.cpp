@@ -114,7 +114,7 @@ namespace
 			order->insertBefore(old, fresh);
 	}
 
-	void subdivide(Edge e, int v, const BGopEx& op)
+	void subdivide(const Edge& e, int v, const BGopEx& op)
 	{
 		assert(!edgeEq(e, {r, u}));
 		auto [a, b] = e;

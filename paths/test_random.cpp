@@ -31,12 +31,12 @@ pair <int, int> randEdge()
 
 pair <int, int> randEdgeBorder()
 {
-	int x = rand() % P.size();
-	int which = rand() % 2;
-	
-	auto first = P[x].begin();
-	auto last = prev(P[x].end());
-	return which ? make_pair(*prev(last), *last) : make_pair(*next(first), *first);
+	auto& path = P[rand() % P.size()];
+	int fromRight = rand() % 2;
+
+	auto first = path.begin();
+	auto last = prev(path.end());
+	return fromRight ? make_pair(*prev(last), *last) : make_pair(*next(first), *first);
 }
 
 pair <Iter, Iter> randPair()
@@ -108,7 +108,7 @@ vector <int> getRandQuery()
 	if (q == 3) // addVertex
 	{
 		auto [a, b] = randEdgeBorder();
-		
+
 		if (isInner(b))
 			return getRandQuery();
 		return {q, a, b, ++n};
@@ -153,49 +153,37 @@ void printOut()
 	printf("\n==========================\n\n");
 }
 
-void fail(const vector <int>& Q, char* seed)
+void fail(const vector <int>& Q, int seed)
 {
-	printf("\nWA!\nQ: %d-%d, %d-%d\nseed: %s\n\n", Q[1], Q[2], Q[3], Q[4], seed);
-	
+	printf("\nWA!\nQ: %d-%d, %d-%d\nseed: %d\n\n", Q[1], Q[2], Q[3], Q[4], seed);
+
 	printOut();
 	PTH::clear();
 	exit(1);
 }
 
-void finalCheck(char* seed)
-{
-	for (auto& p : P)
-	{
-		int x = *(p.begin()), y = *next(p.begin());
-		for (auto it = p.begin(); it != prev(p.end()); it++)
-		{
-			int a = *it, b = *next(it);
-			assert(BRUT::find({a, b}) == BRUT::find({x, y}));
-			
-			if (PTH::find({a, b}) != PTH::find({x, y}))
-				fail({x, y, a, b}, seed);				
-		}
-	}
-}
+int rnd(int a, int b)
+{	return rand() % (b - a) + a;	}
+
+void finalCheck(int seed);
+
 
 const bool runPth = true;
 const bool runBrt = true;
-const bool dbg = false;
+const bool dbg = true;
 
-const pair <int, int> qRng = {1000, 2000};
-
-int rnd(int a, int b)
-{	return rand() % (b - a) + a;	}
+const pair <int, int> qRng = {100, 200};
 
 const vector <string> name {"newPath", "find", "insertVertex", "addVertex", "split", "insertEdge"};
 
 int main(int argc, char* argv[])
 {
+	int seed = argv[1] ? atoi(argv[1]) : 42;
+	std::srand(seed);	
+
 	int q = rnd(qRng.first, qRng.second);
-	std::srand(atoi(argv[1]));
 	
-	printf("(seed = %s)\n", argv[1]);
-	
+	PTH::setN(q+1);
 	PTH::newPath({1, 2});
 	BRUT::newPath({1, 2});
 	n = 2;
@@ -211,7 +199,7 @@ int main(int argc, char* argv[])
 				printf("%d ", i);
 			printf("\t%s\n", name[Q[0]].c_str());
 		}
-		
+
 		switch(Q[0])
 		{
 			case 0:
@@ -226,7 +214,7 @@ int main(int argc, char* argv[])
 				bool same2 = runBrt ? BRUT::find(e) == BRUT::find(f) : true;
 				
 				if (same1 != same2 and runPth and runBrt)
-					fail(Q, argv[1]);
+					fail(Q, seed);
 				break;
 			}	
 			case 2:
@@ -246,15 +234,28 @@ int main(int argc, char* argv[])
 				if (runBrt) BRUT::insertEdge({Q[1], Q[2]}, Q[3], Q[4]);
 				break;
 		}
-		
 		if (dbg)
 			printOut();
 	}
-	
-	finalCheck(argv[1]);
+	finalCheck(seed);
 	PTH::clear();
-	printf("AC... ");
+	printf("AC...\n");
 	return 0;
 }
 
-
+void finalCheck(int seed)
+{
+	for (auto& p : P)
+	{
+		int x = *(p.begin()), y = *next(p.begin());
+		for (auto it = p.begin(); it != prev(p.end()); it++)
+		{
+			int a = *it, b = *next(it);
+			if (runBrt)
+				assert(BRUT::find({a, b}) == BRUT::find({x, y}));
+			
+			if (runPth and PTH::find({a, b}) != PTH::find({x, y}))
+				fail({x, y, a, b}, seed);				
+		}
+	}
+}
