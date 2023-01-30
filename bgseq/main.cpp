@@ -39,7 +39,7 @@ int main()
 	assert(f  == g);
 
     if (BGdecomposition::validate(G, 1, bg, false))
-        printf("base validation - ok\n");
+        printf("base validation \tOK\n");
     else
     {
         print(bg);
@@ -48,7 +48,7 @@ int main()
 
     bg = BGdecomposition::simplify(bg, n);
     if (BGdecomposition::validate(G, 1, bg, true))
-        printf("simplicity check - ok\n");
+        printf("simplicity check \tOK\n");
     else
     {
         print(bg);

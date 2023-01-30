@@ -162,10 +162,6 @@ namespace
 		for (Chain* ch : C)
 		{
 		    for (Chain* d : ch->ch12)
-		        if (!d->covered() and d->type == "2A" and d->t->real())
-		            d->cluster->add(ret);
-		        
-		    for (Chain* d : ch->ch12)
 		        if (!d->covered())
 		            d->setSegment();
 

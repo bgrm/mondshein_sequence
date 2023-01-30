@@ -1,5 +1,6 @@
 #include "mond.h"
 #include <cassert>
+#include <cstdio>
 
 void print(Graph& G)
 {
