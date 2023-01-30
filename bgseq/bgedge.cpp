@@ -1,11 +1,12 @@
-#include <vector>
-#include <cstdio>
-#include <cassert>
 #include "bgedge.h"
-extern std::vector <list <EdgeBG*> > H;
+#include <cassert>
+#include <cstdio>
+#include <vector>
+extern std::vector<list<EdgeBG*>> H;
 
 EdgeBG::EdgeBG(int a, int b)
-: v(a), u(b)
+    : v(a)
+    , u(b)
 {
     H[v].push_back(this);
     H[u].push_back(this);
@@ -14,10 +15,14 @@ EdgeBG::EdgeBG(int a, int b)
 }
 
 int& EdgeBG::other(int x)
-{   return x == v ? u : v;  }
+{
+    return x == v ? u : v;
+}
 
-list <EdgeBG*> ::iterator& EdgeBG::getIt(int x)
-{   return x == v ? pv : pu;    }
+list<EdgeBG*>::iterator& EdgeBG::getIt(int x)
+{
+    return x == v ? pv : pu;
+}
 
 // x has deg 2: this & e
 void EdgeBG::smooth(EdgeBG* e, int x)

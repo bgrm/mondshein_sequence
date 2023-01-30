@@ -4,33 +4,35 @@
 #include <array>
 
 inline Edge flip(const Edge& e)
-{   return std::make_pair(e.second, e.first);   }
+{
+    return std::make_pair(e.second, e.first);
+}
 
 inline bool edgeEq(const Edge& e, const Edge& f)
-{   return e == f or e == flip(f);  }
+{
+    return e == f or e == flip(f);
+}
 
 constexpr auto bgopSize = 7;
-using BGopEx = std::array <int, bgopSize>;
+using BGopEx = std::array<int, bgopSize>;
 
 const BGopEx empty_bgop {};
 #define EMPTY_BGOP(x) (x[0] == 0)
-    
 
 template <typename TT>
-inline void sweep(vector <TT>& T, int n, bool coor)
+inline void sweep(vector<TT>& T, int n, bool coor)
 {
-    vector <vector <TT> > bucket (n+1);
+    vector<vector<TT>> bucket(n + 1);
     for (TT& e : T)
         bucket[coor ? e.second : e.first].push_back(e);
     T.clear();
-    for (int v=0; v<=n; v++)
-    {
+    for (int v = 0; v <= n; v++) {
         T.insert(T.end(), bucket[v].begin(), bucket[v].end());
         bucket[v].clear();
     }
 }
 
-vector <BGopEx> getBGopsExteneded(const vector <BGop>& base, int n);
+vector<BGopEx> getBGopsExteneded(const vector<BGop>& base, int n);
 
 Edge getEdge(int i);
 
@@ -48,7 +50,7 @@ bool shortEar(int i);
 
 bool shortEar(const Edge& e, const BGopEx& op);
 
-vector <Edge> getAllShorts();
+vector<Edge> getAllShorts();
 
 void clearShorts();
 

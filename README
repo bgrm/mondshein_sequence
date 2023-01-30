@@ -1,0 +1,12 @@
+This is an implementation of the algorithm computing the Mondshein sequence for a given 3-connected graph introduced in:
+https://arxiv.org/pdf/1311.0750.pdf
+
+The algorithm itself works in the complexity of O(m), but one of the helper-structures (the one in 'paths') works in O(mlog(m)).
+
+The 'main' program takes the input graph from the standard input and computes its Mondshein sequence.
+The 'test n' script runs main on many random graphs created with n bg-operations.
+
+The 'bgseq' module contains the implementation of bg-sequence computation.
+The 'order' module contains the implementation of the total order maintenance algorithm.
+The 'paths' module contains the implementation of the data structure maintaining edge-disjoint paths.
+ 

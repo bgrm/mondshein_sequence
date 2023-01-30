@@ -44,7 +44,5 @@ sqrt.o: order/sqrt/sqrt.cpp
 	$(CPP) -c $^ -o $@
 
 	
-
-
 clean:
-	rm -f *.o
+	rm -f *.o in.txt test 
