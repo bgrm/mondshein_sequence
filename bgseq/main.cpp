@@ -37,28 +37,18 @@ int main()
     assert(f == g);
 
     if (BGdecomposition::validate(G, 1, bg, false))
-<<<<<<< HEAD
         printf("base validation \tOK\n");
     else
     {
-=======
-        printf("base validation - ok\n");
-    else {
->>>>>>> 32adb5708db2bc4b13a5a929ffb8e1ad6aa1c65b
         print(bg);
         return 1;
     }
 
     bg = BGdecomposition::simplify(bg, n);
     if (BGdecomposition::validate(G, 1, bg, true))
-<<<<<<< HEAD
         printf("simplicity check \tOK\n");
     else
     {
-=======
-        printf("simplicity check - ok\n");
-    else {
->>>>>>> 32adb5708db2bc4b13a5a929ffb8e1ad6aa1c65b
         print(bg);
         return 1;
     }

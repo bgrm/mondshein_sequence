@@ -153,18 +153,10 @@ vector<BGpath> bgPaths(int n)
         C[i]->cluster->add(ret);
     vector<int> idToPathid(n + 1); // mapping of vertices to id on path
 
-<<<<<<< HEAD
-		for (Chain* ch : C)
-		{
-		    for (Chain* d : ch->ch12)
-		        if (!d->covered())
-		            d->setSegment();
-=======
     for (Chain* ch : C) {
         for (Chain* d : ch->ch12)
             if (!d->covered())
                 d->setSegment();
->>>>>>> 32adb5708db2bc4b13a5a929ffb8e1ad6aa1c65b
 
         for (Chain* d : ch->tp3)
             if (!d->covered())

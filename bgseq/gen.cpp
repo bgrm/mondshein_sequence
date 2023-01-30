@@ -93,14 +93,8 @@ void gen(int s, int seed) // s - # bgops
     printf("%d %d\n", n, SZ(E));
     for (auto [a, b] : E)
         printf("%d %d\n", a, b), G[a].push_back(b), G[b].push_back(a);
-<<<<<<< HEAD
     
     return;
-=======
-
-    //return;
-
->>>>>>> 32adb5708db2bc4b13a5a929ffb8e1ad6aa1c65b
     // check for 3-connectivity of the generated graph
 
     for (int a = 1; a <= n; a++)
