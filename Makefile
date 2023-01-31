@@ -40,7 +40,7 @@ shorts.o: shorts.cpp
 	$(CPP) -c $^ -o $@
 
 
-sqrt.o: order/sqrt/sqrt.cpp
+sqrt.o: order/sqrt.cpp
 	$(CPP) -c $^ -o $@
 
 	

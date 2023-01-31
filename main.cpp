@@ -30,12 +30,13 @@ int main()
     MSeq M = Mondshein::compute(G, r, t, u);
     assert(Mondshein::validate(G, r, t, u, M));
 
+    printf("Chains of computed Mondshein sequence are:\n");
+
     for (auto& p : M) {
         for (int v : p)
             printf("%d ", v);
         printf("\n");
     }
 
-    printf("CORRECT\n");
     return 0;
 }

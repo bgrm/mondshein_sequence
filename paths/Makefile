@@ -14,5 +14,5 @@ brut.o: brut.cpp brut.h
 
 
 clean:
-	rm -f *.o test_random
+	rm -f *.o test_random test
 

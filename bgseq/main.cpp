@@ -1,5 +1,6 @@
 #include "decom.h"
 #include <cassert>
+#include <cstdio>
 
 void print(const vector<BGop>& bg)
 {

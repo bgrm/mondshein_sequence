@@ -1,7 +1,7 @@
 #ifndef __SQRT__
 #define __SQRT__
 
-#include "../order.h"
+#include "order.h"
 #include <list>
 #include <vector>
 using std::vector, std::list;

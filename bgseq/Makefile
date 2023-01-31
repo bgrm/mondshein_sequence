@@ -23,11 +23,6 @@ cluster.o: cluster.cpp
 
 bonus.o: bonus.cpp
 	$(CPP) -c $^ -o $@
-
-
-test: runner.sh
-	@ make runner
-	./runner 10
 	
 clean:
-	rm -f *.o
+	rm -f *.o main test gen

@@ -6,7 +6,7 @@ using std::pair;
 
 struct Edge;
 
-struct Path // STL list doesn't allow splitting in O(1)
+struct Path // STL-list doesn't allow splitting in O(1)
 {
     Edge* start;
     int id, lastVertex;

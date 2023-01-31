@@ -7,6 +7,11 @@
 using std::rand, std::make_pair, std::swap, std::string;
 namespace PTH = PathsStructure;
 
+const bool runPth = true;
+const bool runBrt = true;
+const bool dbg = false;
+const pair<int, int> qRng = { 100, 200 };
+
 int n; // vertices -> 1..n
 extern int m; // number of edges
 extern vector<list<int>> P; // paths maintaining by brut
@@ -162,22 +167,19 @@ int rnd(int a, int b)
 
 void finalCheck(int seed);
 
-const bool runPth = true;
-const bool runBrt = true;
-const bool dbg = false;
-
-const pair<int, int> qRng = { 100, 200 };
-
 const vector<string> name { "newPath", "find", "insertVertex", "addVertex", "split", "insertEdge" };
 
 int main(int argc, char* argv[])
 {
-    int seed = argv[1] ? atoi(argv[1]) : 42;
+    if (argc < 3) {
+        printf("No arguments provided.\n");
+        return 1;
+    }
+    int seed = atoi(argv[1]);
+    int q = atoi(argv[2]);
     std::srand(seed);
 
-    int q = rnd(qRng.first, qRng.second);
-
-    PTH::setN(q + 1);
+    PTH::setN(q * 2 + 1);
     PTH::newPath({ 1, 2 });
     BRUT::newPath({ 1, 2 });
     n = 2;
@@ -237,9 +239,10 @@ int main(int argc, char* argv[])
         if (dbg)
             printOut();
     }
+
     finalCheck(seed);
     PTH::clear();
-    printf("AC...\n");
+    printf("AC\n");
     return 0;
 }
 

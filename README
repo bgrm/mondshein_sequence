@@ -4,9 +4,24 @@ https://arxiv.org/pdf/1311.0750.pdf
 The algorithm itself works in the complexity of O(m), but one of the helper-structures (the one in 'paths') works in O(mlog(m)).
 
 The 'main' program takes the input graph from the standard input and computes its Mondshein sequence.
-The 'test n' script runs main on many random graphs created with n bg-operations.
+The 'test n' script runs 'main' on many random graphs created with 'n' bg-operations.
+
+The 'main' program can be compiled by a 'make' command and the 'test' script can be compiled with the 'make test' command.
 
 The 'bgseq' module contains the implementation of bg-sequence computation.
 The 'order' module contains the implementation of the total order maintenance algorithm.
 The 'paths' module contains the implementation of the data structure maintaining edge-disjoint paths.
- 
+
+Each module contains a 'test' script, which can be compiled with 'make test' command.
+All these scripts take one argument (a natural number) specifying the size of test data.
+
+The 'main' program reads the input graph from the standard input in the following format:
+At first, 2 numbers 'n' and 'm' are expected,
+which mean the number of vertices and the number of edges of the input graph.
+Vertices are represented by numbers 1, ..., 'n'.
+Then 'm' pairs of vertices are expected, which represent edges of the input graph.
+At the end 3 numbers are expected, which represent the vertices 'r', 't' and 'u'.
+
+The 'main' program prints the computed Mondshein sequence into standard output.
+Each chain is printed in another line as a sequence of vertices.
+The vertices 't' and 'r' are printed as the first and the last vertices of the first chain.

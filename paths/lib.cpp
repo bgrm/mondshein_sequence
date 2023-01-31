@@ -1,11 +1,7 @@
 #include "lib.h"
 #include <unordered_map>
 #include <vector>
-<<<<<<< HEAD
 #include <cstdio>
-#include "lib.h"
-=======
->>>>>>> 32adb5708db2bc4b13a5a929ffb8e1ad6aa1c65b
 using std::vector;
 
 extern vector<Path*> paths;
