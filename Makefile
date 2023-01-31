@@ -45,4 +45,4 @@ sqrt.o: order/sqrt.cpp
 
 	
 clean:
-	rm -f *.o in.txt test 
+	rm -f *.o in.txt main gen test 
