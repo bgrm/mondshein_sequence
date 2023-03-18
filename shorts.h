@@ -3,6 +3,9 @@
 #include "bgseq/decom.h"
 #include <array>
 
+constexpr auto BGOP_SIZE = 7;
+using BGopEx = std::array<int, BGOP_SIZE>;
+
 inline Edge flip(const Edge& e)
 {
     return std::make_pair(e.second, e.first);
@@ -12,12 +15,6 @@ inline bool edgeEq(const Edge& e, const Edge& f)
 {
     return e == f or e == flip(f);
 }
-
-constexpr auto bgopSize = 7;
-using BGopEx = std::array<int, bgopSize>;
-
-const BGopEx empty_bgop {};
-#define EMPTY_BGOP(x) (x[0] == 0)
 
 template <typename TT>
 inline void sweep(vector<TT>& T, int n, bool coor)

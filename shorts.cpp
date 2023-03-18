@@ -33,10 +33,10 @@ vector<BGopEx> getBGopsExteneded(const vector<BGop>& base, int n)
 {
     vector<EdgeIndexed> all;
     for (auto& [f, g, h] : base) {
-#define PUSH(i, j) all.push_back(EdgeIndexed({ i, j }, SZ(all)))
         auto [v, w] = f;
         auto [a, b] = g;
         auto [c, d] = h;
+#define PUSH(i, j) all.push_back(EdgeIndexed({ i, j }, SZ(all)))
         PUSH(v, w);
         PUSH(a, b);
         PUSH(c, d);
@@ -44,7 +44,7 @@ vector<BGopEx> getBGopsExteneded(const vector<BGop>& base, int n)
         PUSH(v, b);
         PUSH(c, w);
         PUSH(w, d);
-#undef PUSH
+#undef  PUSH
     }
     sweep(all, n, 1), sweep(all, n, 0);
 
@@ -52,7 +52,7 @@ vector<BGopEx> getBGopsExteneded(const vector<BGop>& base, int n)
     E.push_back({ -1, -1 });
 
     for (auto& e : all) {
-        int i = e.ind / bgopSize, j = e.ind % bgopSize;
+        int i = e.ind / BGOP_SIZE, j = e.ind % BGOP_SIZE;
         if (!e.equal(E.back()))
             E.push_back(e.toEdge());
         ret[i][j] = SZ(E) - 1;
@@ -64,6 +64,7 @@ vector<BGopEx> getBGopsExteneded(const vector<BGop>& base, int n)
             std::swap(ret[i][4], ret[i][6]);
         }
     }
+
     all.clear();
     isShort = new bool[SZ(E)]();
     return ret;

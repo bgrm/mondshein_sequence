@@ -1,18 +1,19 @@
 CPP = g++ -std=c++17
 
-main: inter.o vertex.o bgedge.o chain.o cluster.o bonus.o decom.o main.cpp
+main: main.cpp bgseq.a
 	$(CPP) $^ -o $@
 
-decom.o: decom.cpp
+
+bgseq.a: bgedge.o inter.o vertex.o chain.o cluster.o bonus.o decom.o
+	ar rcs $@ $^
+	
+bgedge.o: bgedge.cpp
 	$(CPP) -c $^ -o $@
 
 inter.o: inter.cpp
 	$(CPP) -c $^ -o $@
 	
 vertex.o: vertex.cpp
-	$(CPP) -c $^ -o $@
-	
-bgedge.o: bgedge.cpp
 	$(CPP) -c $^ -o $@
 	
 chain.o: chain.cpp
@@ -24,5 +25,9 @@ cluster.o: cluster.cpp
 bonus.o: bonus.cpp
 	$(CPP) -c $^ -o $@
 	
+decom.o: decom.cpp
+	$(CPP) -c $^ -o $@
+
+
 clean:
-	rm -f *.o main test gen
+	rm -f *.o *.so *.a main test gen

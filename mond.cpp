@@ -2,11 +2,12 @@
 #include "bgseq/decom.h"
 #include "order/order.h"
 //#include "order/sqrt.h"
-#include "paths/paths.h"
+#include "paths/ops.h"
 #include "shorts.h"
 
 #include <cassert>
 #include <set>
+#include <iostream>
 using std::swap, std::tie;
 namespace PTH = PathsStructure;
 
@@ -18,26 +19,32 @@ std::array<int, 2>* I; // indices of edges incident to v in it's birth-ear
 int *nextT, *nextU;
 int r, t, u, n;
 
-inline int zeroEarId()
+int zeroEarId()
 {
     return order->successor(0);
 }
 
-pair<int, int> E(int v)
+int Eid(int v)
 {
     bool which = edgeEq(getEdge(I[v][0]), { r, t });
-    return getEdge(I[v][which]);
+    return I[v][which];
+}
+
+int find(int eid)
+{
+    auto e = getEdge(eid);
+    return edgeEq(e, {r,t}) ? zeroEarId() : PTH::find(eid);
 }
 
 // e cannot be short!
-int pathId(const Edge& e)
+int pathId(const Edge& e, const BGopEx& op)
 {
-    return edgeEq(e, { r, t }) ? zeroEarId() : PTH::find(e);
+    return find(getInd(e, op));
 }
 
 int pathId(int v)
 {
-    return PTH::find(E(v));
+    return PTH::find(Eid(v));
 }
 
 void print()
@@ -70,15 +77,12 @@ void print()
     printf("\n=====================\n\n");
 }
 
-template <typename T1, typename T2>
-bool birthEq(T1 a, T2 b)
+bool birthEq(int a, int b)
 {
     return pathId(a) == pathId(b);
 }
 
-//  no short ear allowed!
-template <typename T1, typename T2>
-bool birthLow(T1 a, T2 b)
+bool birthLow(int a, int b)
 {
     return order->compare(pathId(a), pathId(b));
 }
@@ -97,23 +101,35 @@ void initI(int v, int a, int b, const BGopEx& op)
 void updateI(int v, int newInd, int only = 0)
 {
     for (int& i : I[v])
-        if (only == i or (only == 0 and !birthEq(getEdge(i), getEdge(newInd))))
+        if (only == i or (only == 0 and find(i) != find(newInd)))
             i = newInd;
 }
 
-void enlong(const Edge& e, int end, int v, const BGopEx& op = empty_bgop)
+void enlong(int eid, int end, int v, const BGopEx& op, bool callInitI = false)
 {
-    PTH::addVertex(e.second == end ? e : flip(e), v);
-    if (!EMPTY_BGOP(op))
-        initI(end, e.first ^ e.second ^ end, v, op);
+    int newEdge = getInd({end, v}, op);
+    assert(newEdge != 0);
+    PTH::addVertex(eid, newEdge);
+    if (callInitI)
+    {
+        auto e = getEdge(eid);
+        int other = e.first ^ e.second ^ end;
+        initI(end, other, v, op);
+    }
+}
+
+void enlong(const Edge& e, int end, int v, const BGopEx& op, bool callInitI = false)
+{
+    assert(getInd(e, op) != 0);
+    enlong(getInd(e, op), end, v, op, callInitI);
 }
 
 int createPath(const vector<int>& vs, const BGopEx& op)
 {
     assert(SZ(vs) > 1);
-    int ret = PTH::newPath({ vs[0], vs[1] });
+    int ret = PTH::newPath(getInd({ vs[0], vs[1] }, op));
     for (int i = 2; i < SZ(vs); i++)
-        enlong({ vs[i - 2], vs[i - 1] }, vs[i - 1], vs[i], op);
+        enlong({ vs[i - 2], vs[i - 1] }, vs[i - 1], vs[i], op, true);
     return ret;
 }
 
@@ -146,7 +162,7 @@ void subdivide(const Edge& e, int v, const BGopEx& op)
             initI(r, t, v, op);
             initI(t, r, v, op);
         } else {
-            enlong(E(t), t, v);
+            enlong(Eid(t), t, v, op);;
             updateI(r, ir, i);
             ;
             updateI(t, it, i);
@@ -156,10 +172,10 @@ void subdivide(const Edge& e, int v, const BGopEx& op)
     } else {
         if (shortEar(i)) {
             removeShort(i);
-            int newPath = PTH::newPath(e);
+            int newPath = PTH::newPath(i);
             insertIntoOrder(youngerId(a, b), newPath);
         }
-        PTH::insertVertex(e, v);
+        PTH::insertVertex(i, ia, ib);
         initI(v, a, b, op);
         updateI(a, ia, i);
         updateI(b, ib, i);
@@ -171,23 +187,20 @@ void leg(Edge e, const BGopEx& op)
     auto [x, y] = e;
     int i = getInd(e, op);
     int former = pathId(y);
-    int latter = PTH::split(E(y), y);
+    int latter = PTH::split(Eid(y), y);
 
-    Edge toEnlong = getEdge(I[y][0]), other = getEdge(I[y][1]);
-    int otherInd = I[y][1];
-    if (PTH::isSingleEdge(other) or PTH::isBorderVertex(toEnlong, x)) {
-        swap(toEnlong, other);
-        otherInd = I[y][0];
-    }
+    int toEnlongInd = I[y][0], otherInd = I[y][1];
+    if (PTH::isSingleEdge(otherInd) or PTH::isBorderVertex(toEnlongInd, x))
+        swap(toEnlongInd, otherInd);
 
     removeShort(i);
-    enlong(toEnlong, y, x);
+    enlong(toEnlongInd, y, x, op);
     updateI(y, i);
-    insertIntoOrder(former, latter, former == pathId(e));
+    insertIntoOrder(former, latter, former == find(i));
 
-    if (PTH::isSingleEdge(other)) {
-        removedId[PTH::find(other)] = true;
-        PTH::eraseShort(other);
+    if (PTH::isSingleEdge(otherInd)) {
+        removedId[PTH::find(otherInd)] = true;
+        PTH::eraseShort(otherInd);
         insertShort(otherInd);
     }
 }
@@ -199,8 +212,11 @@ void belly(Edge e, const BGopEx& op)
     removeShort(i);
 
     int former = pathId(y);
-    int latter = PTH::insertEdge(E(y), x, y);
-    insertIntoOrder(former, latter, former == pathId(e));
+
+    assert(birthEq(x, y));
+
+    int latter = PTH::insertEdge(i, Eid(x), Eid(y));
+    insertIntoOrder(former, latter, former == pathId(e, op));
     updateI(x, i);
     updateI(y, i);
 }
@@ -265,7 +281,7 @@ void init(Graph& G)
     bgops = getBGopsExteneded(bgopsBase, n);
 
     int m = SZ(bgops) + n + 1;
-    PTH::setN(n);
+    PTH::init(SZ(bgops) * BGOP_SIZE);
     order = new Order(m);
     removedId = new bool[m * 2 + 1]();
     I = new std::array<int, 2>[n + 1]();
@@ -295,7 +311,7 @@ void caseRU(int v, int w, int a, int b, int c, int d, const BGopEx& op)
 
     if (birthEq(w, u) and nextU[u] != v) {
         leg({ v, w }, op);
-        enlong({ w, v }, v, r, op);
+        enlong({ w, v }, v, r, op, true);
         insertShort({ v, u }, op);
     } else if (nextU[u] != v) {
         int p = createPath({ r, v, w }, op);
@@ -341,7 +357,7 @@ void caseEE(int v, int w, int a, int b, int c, int d, const BGopEx& op)
         removeShort({ c, d }, op);
         subdivide({ a, b }, v, op);
         leg({ w, v }, op);
-        enlong({ v, w }, w, c, op);
+        enlong({ v, w }, w, c, op, true);
         insertShort({ w, d }, op);
     }
 }
@@ -361,7 +377,6 @@ MSeq extractResult()
 void clear()
 {
     BGdecomposition::clear();
-    PTH::clear();
     clearShorts();
     delete order;
     delete removedId;

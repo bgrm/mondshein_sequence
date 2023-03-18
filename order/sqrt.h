@@ -1,6 +1,4 @@
-#ifndef __SQRT__
-#define __SQRT__
-
+#pragma once
 #include "order.h"
 #include <list>
 #include <vector>
@@ -20,5 +18,3 @@ struct OrderSqrt : public Order {
 
     ~OrderSqrt() override;
 };
-
-#endif

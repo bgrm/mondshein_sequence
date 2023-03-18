@@ -1,7 +1,7 @@
 This is an implementation of the algorithm computing the Mondshein sequence for a given 3-connected graph introduced in:
 https://arxiv.org/pdf/1311.0750.pdf
 
-The algorithm itself works in the complexity of O(m), but one of the helper-structures (the one in 'paths') works in O(mlog(m)).
+The algorithm works in the complexity of O(m).
 
 The 'main' program takes the input graph from the standard input and computes its Mondshein sequence.
 The 'test n' script runs 'main' on many random graphs created with 'n' bg-operations.
@@ -13,7 +13,7 @@ The 'order' module contains the implementation of the total order maintenance al
 The 'paths' module contains the implementation of the data structure maintaining edge-disjoint paths.
 
 Each module contains a 'test' script, which can be compiled with 'make test' command.
-All these scripts take one argument (a natural number) specifying the size of test data.
+All these scripts take one argument specifying the size of test data.
 
 The 'main' program reads the input graph from the standard input in the following format:
 At first, 2 numbers 'n' and 'm' are expected,

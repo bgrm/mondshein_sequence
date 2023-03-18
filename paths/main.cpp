@@ -1,14 +1,16 @@
 #include "brut.h"
-#include "paths.h"
+#include "ops.h"
 #include <cassert>
 #include <random>
 #include <string>
+#include <vector>
+#include <map>
 
-using std::rand, std::make_pair, std::swap, std::string;
+using std::rand, std::make_pair, std::swap, std::string, std::vector, std::map;
 namespace PTH = PathsStructure;
 
-const bool runPth = true;
-const bool runBrt = true;
+const bool runPath = true;
+const bool runBrut = true;
 const bool dbg = false;
 const pair<int, int> qRng = { 100, 200 };
 
@@ -136,7 +138,7 @@ vector<int> getRandQuery()
         } catch (char const* _) {
             return getRandQuery();
         }
-        return { q, *a, *next(a), *a, *b };
+        return { q, *a, *next(a), *a, *b, *next(b) };
     }
     assert(false);
 }
@@ -156,7 +158,6 @@ void fail(const vector<int>& Q, int seed)
     printf("\nWA!\nQ: %d-%d, %d-%d\nseed: %d\n\n", Q[1], Q[2], Q[3], Q[4], seed);
 
     printOut();
-    PTH::clear();
     exit(1);
 }
 
@@ -165,6 +166,26 @@ int rnd(int a, int b)
     return rand() % (b - a) + a;
 }
 
+vector <pair <int, int> > EE;
+std::map <pair <int, int>, int> M;
+
+pair <int, int> getEdge(int i)
+{   return EE[i];   }
+
+int markEdge(int a, int b)
+{
+    auto it = M.find({a, b});
+    if (it == M.end())
+    {
+        M[{a, b}] = M[{b, a}] = EE.size();
+        EE.push_back({a, b});
+    }
+    return M[{a, b}];
+}
+
+int markEdge(pair <int, int> p)
+{   return markEdge(p.first, p.second); }
+
 void finalCheck(int seed);
 
 const vector<string> name { "newPath", "find", "insertVertex", "addVertex", "split", "insertEdge" };
@@ -172,15 +193,17 @@ const vector<string> name { "newPath", "find", "insertVertex", "addVertex", "spl
 int main(int argc, char* argv[])
 {
     if (argc < 3) {
-        printf("No arguments provided.\n");
+        printf("No arguments provided. (seed and number of operations)\n");
         return 1;
     }
     int seed = atoi(argv[1]);
     int q = atoi(argv[2]);
     std::srand(seed);
 
-    PTH::setN(q * 2 + 1);
-    PTH::newPath({ 1, 2 });
+    assert(markEdge(-1, -1) == 0);
+
+    PTH::init(q * 2 + 1);
+    PTH::newPath(markEdge(1, 2));
     BRUT::newPath({ 1, 2 });
     n = 2;
     q--;
@@ -196,43 +219,43 @@ int main(int argc, char* argv[])
 
         switch (Q[0]) {
         case 0:
-            if (runPth)
-                PTH::newPath({ Q[1], Q[2] });
-            if (runBrt)
+            if (runPath)
+                PTH::newPath(markEdge( Q[1], Q[2] ));
+            if (runBrut)
                 BRUT::newPath({ Q[1], Q[2] });
             break;
         case 1: {
             pair<int, int> e = { Q[1], Q[2] };
             pair<int, int> f = { Q[3], Q[4] };
-            bool same1 = runPth ? PTH::find(e) == PTH::find(f) : true;
-            bool same2 = runBrt ? BRUT::find(e) == BRUT::find(f) : true;
+            bool same1 = runPath ? PTH::find(markEdge(e)) == PTH::find(markEdge(f)) : true;
+            bool same2 = runBrut ? BRUT::find(e) == BRUT::find(f) : true;
 
-            if (same1 != same2 and runPth and runBrt)
+            if (same1 != same2 and runPath and runBrut)
                 fail(Q, seed);
             break;
         }
         case 2:
-            if (runPth)
-                PTH::insertVertex({ Q[1], Q[2] }, Q[3]);
-            if (runBrt)
+            if (runPath)
+                PTH::insertVertex(markEdge(Q[1], Q[2]), markEdge(Q[1], Q[3]), markEdge(Q[2], Q[3]));
+            if (runBrut)
                 BRUT::insertVertex({ Q[1], Q[2] }, Q[3]);
             break;
         case 3:
-            if (runPth)
-                PTH::addVertex({ Q[1], Q[2] }, Q[3]);
-            if (runBrt)
+            if (runPath)
+                PTH::addVertex(markEdge(Q[1], Q[2]), markEdge(Q[2], Q[3]));
+            if (runBrut)
                 BRUT::addVertex({ Q[1], Q[2] }, Q[3]);
             break;
         case 4:
-            if (runPth)
-                PTH::split({ Q[1], Q[2] }, Q[3]);
-            if (runBrt)
+            if (runPath)
+                PTH::split(markEdge(Q[1], Q[2]), Q[3]);
+            if (runBrut)
                 BRUT::split({ Q[1], Q[2] }, Q[3]);
             break;
         case 5:
-            if (runPth)
-                PTH::insertEdge({ Q[1], Q[2] }, Q[3], Q[4]);
-            if (runBrt)
+            if (runPath)
+                PTH::insertEdge(markEdge(Q[3], Q[4]), markEdge(Q[1], Q[2]), markEdge(Q[5], Q[4]));
+            if (runBrut)
                 BRUT::insertEdge({ Q[1], Q[2] }, Q[3], Q[4]);
             break;
         }
@@ -240,8 +263,8 @@ int main(int argc, char* argv[])
             printOut();
     }
 
+    printf("FINAL CHECK\n");
     finalCheck(seed);
-    PTH::clear();
     printf("AC\n");
     return 0;
 }
@@ -252,10 +275,10 @@ void finalCheck(int seed)
         int x = *(p.begin()), y = *next(p.begin());
         for (auto it = p.begin(); it != prev(p.end()); it++) {
             int a = *it, b = *next(it);
-            if (runBrt)
+            if (runBrut)
                 assert(BRUT::find({ a, b }) == BRUT::find({ x, y }));
 
-            if (runPth and PTH::find({ a, b }) != PTH::find({ x, y }))
+            if (runPath and PTH::find(markEdge(a, b)) != PTH::find(markEdge(x, y)))
                 fail({ x, y, a, b }, seed);
         }
     }

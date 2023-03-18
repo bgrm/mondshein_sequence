@@ -1,9 +1,7 @@
 #include "order.h"
 #include "sqrt.h"
-#include <cassert>
 #include <ctime>
 #include <iostream>
-//#include "dbg.h"
 using std::cout;
 
 vector<int> T;
@@ -12,7 +10,7 @@ Order* order;
 OrderSqrt* brutForce;
 
 const int checkConst = 3;
-bool checkCorrectness = true;
+const bool checkCorrectness = true;
 
 void check()
 {
@@ -26,7 +24,6 @@ void check()
     if (p == q)
         return;
 
-    order->print();
     cout << "T[" << i << "] = " << T[i] << ",  T[" << j << "] = " << T[j] << ";\n";
     cout << "order -> " << p << ",  sqrt -> " << q << ";;\n\n";
 
