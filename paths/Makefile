@@ -3,7 +3,7 @@ CPP = g++ --std=c++17
 main: main.cpp brut.o paths.a
 	$(CPP) $^ -o $@
 
-paths.a: element.o micro.o mezzo.o path.o ops.o pathDivision.o microSplitter.o
+paths.a: element.o micro.o mezzo.o path.o ops.o pathDivision.o microsetSplitter.o
 	ar rcs $@ $^
 
 element.o: element.cpp
@@ -24,7 +24,7 @@ ops.o: ops.cpp
 pathDivision.o: pathDivision.cpp
 	$(CPP) -c $^ -o $@
 
-microSplitter.o: microSplitter.cpp
+microsetSplitter.o: microsetSplitter.cpp
 	$(CPP) -c $^ -o $@
 
 

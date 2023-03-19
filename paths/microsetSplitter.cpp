@@ -5,7 +5,6 @@
 #include "path.h"
 #include <cassert>
 
-
 extern vector <Element> E;
 extern Path::SelfIter_t nullPath;
 extern Mezzoset::SelfIter_t unlabeledMicrosets;
@@ -19,7 +18,6 @@ MicrosetSplitter::MicrosetSplitter(Microset::SelfIter_t micro)
 , oldLabOnLeft(false)
 , oldLabOnRight(false)
 {}
-
 
 vector <vector <int> > MicrosetSplitter::extractPaths() const
 {

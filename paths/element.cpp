@@ -10,7 +10,6 @@ extern Microset::SelfIter_t nullMicroset;
     
 std::vector <Element> E;
 
-
 bool Element::isMarginal() const
 {   return pathPtr != nullPath;    }
 
